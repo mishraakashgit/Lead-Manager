@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en" class="standalone">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enquiry Khata</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0F6E66">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one phone-width column (max 460px), daily view first, fixed bottom bar with a big centre "Add" button, bottom sheets for every action. */
+:root {
+  --bg: #F2F4F3;
+  --surface: #FFFFFF;
+  --sunken: #E8ECEA;
+  --ink: #18201F;
+  --muted: #5A6664;
+  --line: #DCE2E0;
+  --accent: #0F6E66;      /* peacock teal: primary actions */
+  --accent-ink: #FFFFFF;
+  --marigold: #E39A05;    /* needs attention */
+  --marigold-soft: #FCEFD2;
+  --wa: #1D8A4C;          /* WhatsApp action */
+  --wa-ink: #FFFFFF;
+  --danger: #B42318;
+  --s-asked: #66727A;
+  --s-quoted: #2F62C9;
+  --s-payment: #C47A00;
+  --s-paid: #0F6E66;
+  --s-shipped: #5B6B3A;
+  --shadow: 0 1px 2px rgba(20, 40, 36, .06), 0 4px 16px rgba(20, 40, 36, .06);
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1413; --surface: #182020; --sunken: #212B2A; --ink: #E9EFEE; --muted: #9DABA8; --line: #2A3534;
+    --accent: #36B7AA; --accent-ink: #06201D; --marigold: #F4B43C; --marigold-soft: #3A2E12; --wa: #3CC57A; --wa-ink: #05210F; --danger: #F97066;
+    --s-asked: #9AA6AD; --s-quoted: #7FA6F5; --s-payment: #F4B43C; --s-paid: #36B7AA; --s-shipped: #A9BD7A;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1413; --surface: #182020; --sunken: #212B2A; --ink: #E9EFEE; --muted: #9DABA8; --line: #2A3534;
+  --accent: #36B7AA; --accent-ink: #06201D; --marigold: #F4B43C; --marigold-soft: #3A2E12; --wa: #3CC57A; --wa-ink: #05210F; --danger: #F97066;
+  --s-asked: #9AA6AD; --s-quoted: #7FA6F5; --s-payment: #F4B43C; --s-paid: #36B7AA; --s-shipped: #A9BD7A;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+html.standalone { padding-top: env(safe-area-inset-top, 0px); }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+.app { max-width: 460px; margin: 0 auto; padding-block: 12px calc(110px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 18px; }
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.shop { display: grid; gap: 1px; min-width: 0; }
+.shop small { color: var(--muted); font-size: 13px; }
+.shop strong { font-family: var(--font-display); font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); display: grid; place-items: center; flex: none; }
+.icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.sample-note { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); background: var(--sunken); border-radius: 10px; padding: 8px 12px; }
+.sample-note b { color: var(--ink); font-weight: 600; }
+.sample-note button { margin-left: auto; border: 0; background: none; color: var(--accent); font-weight: 600; padding: 2px 4px; }
+
+/* Summary */
+.summary { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); padding: 16px; display: grid; gap: 14px; }
+.summary h1 { margin: 0; font-family: var(--font-display); font-size: 24px; line-height: 1.15; font-weight: 700; text-wrap: balance; }
+.summary h1 em { font-style: normal; color: var(--marigold); }
+.tally { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tally a { text-decoration: none; color: inherit; background: var(--sunken); border-radius: 12px; padding: 10px; display: grid; gap: 2px; }
+.tally .n { font-family: var(--font-display); font-size: 26px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.tally .l { font-size: 12.5px; color: var(--muted); line-height: 1.25; }
+.tally a.hot .n { color: var(--marigold); }
+
+/* Sections */
+.section { display: grid; gap: 10px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.section-head h2 { margin: 0; font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 700; }
+.section-head span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.empty { font-size: 14px; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 14px; }
+
+/* Lead card */
+.card { background: var(--surface); border-radius: 16px; box-shadow: var(--shadow); padding: 14px; display: grid; gap: 10px; position: relative; }
+.card.due { box-shadow: inset 4px 0 0 var(--marigold), var(--shadow); }
+.card-main { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; background: none; border: 0; padding: 0; text-align: left; width: 100%; }
+.card-main .who { font-weight: 700; font-size: 16px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-main .who small { font-weight: 500; color: var(--muted); font-size: 13px; margin-left: 4px; }
+.card-main .val { font-family: var(--font-display); font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; }
+.card-main .what { color: var(--ink); font-size: 14px; min-width: 0; }
+.card-main .why { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+.card.due .why { color: var(--marigold); font-weight: 600; }
+.pill { justify-self: end; font-size: 11.5px; font-weight: 700; letter-spacing: .02em; padding: 2px 8px; border-radius: 99px; border: 1px solid currentColor; white-space: nowrap; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 11px; padding: 8px 12px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--ink); min-height: 40px; }
+.btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.9; flex: none; }
+.btn.wa { background: var(--wa); border-color: var(--wa); color: var(--wa-ink); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.ghost { border-color: transparent; background: none; color: var(--muted); padding-inline: 8px; }
+.btn.grow { flex: 1; justify-content: center; }
+.btn.danger { color: var(--danger); }
+
+.later { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+.later button { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 0 12px; text-align: left; background: none; border: 0; padding: 11px 14px; border-top: 1px solid var(--line); }
+.later button:first-child { border-top: 0; }
+.later .who { font-weight: 600; font-size: 14.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.later .when { font-size: 13px; color: var(--muted); }
+.later .what { font-size: 13px; color: var(--muted); grid-column: 1 / -1; }
+
+/* Pipeline */
+.page-title { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; }
+.stage-scroll { overflow-x: auto; margin-inline: -4px; padding: 2px 4px 6px; scrollbar-width: none; }
+.stage-scroll::-webkit-scrollbar { display: none; }
+.stages { display: flex; gap: 8px; width: max-content; }
+.stage-chip { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 8px 12px; display: grid; gap: 0; text-align: left; min-width: 92px; }
+.stage-chip .n { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stage-chip .l { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.stage-chip[aria-pressed="true"] { border-color: var(--chip, var(--accent)); box-shadow: inset 0 0 0 1px var(--chip, var(--accent)); }
+.stage-chip[aria-pressed="true"] .n { color: var(--chip, var(--accent)); }
+.flow { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.stage-total { font-size: 14px; color: var(--muted); }
+.stage-total b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+/* Bottom bar */
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
+  padding: 6px max(16px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.bar-inner { max-width: 460px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.tab { background: none; border: 0; display: grid; justify-items: center; gap: 2px; padding: 6px; color: var(--muted); font-size: 12.5px; font-weight: 600; border-radius: 12px; }
+.tab svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.tab[aria-current="page"] { color: var(--accent); }
+.tab .badge { font-variant-numeric: tabular-nums; }
+.add-btn { width: 60px; height: 60px; border-radius: 20px; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; margin-top: -26px; box-shadow: 0 6px 18px rgba(15, 110, 102, .35); }
+.add-btn svg { width: 28px; height: 28px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+
+/* Sheets */
+.backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(8, 16, 15, .45); display: flex; align-items: flex-end; justify-content: center; }
+.sheet { width: 100%; max-width: 500px; max-height: 90dvh; overflow-y: auto; background: var(--surface); border-radius: 22px 22px 0 0;
+  padding: 10px max(18px, env(safe-area-inset-left, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 14px; animation: rise .22s ease-out; }
+.grip { width: 40px; height: 4px; border-radius: 4px; background: var(--line); justify-self: center; }
+.sheet h3 { margin: 0; font-family: var(--font-display); font-size: 21px; font-weight: 700; }
+.sheet .sub { margin: -8px 0 0; color: var(--muted); font-size: 14px; }
+@keyframes rise { from { transform: translateY(24px); } to { transform: none; } }
+
+.field { display: grid; gap: 6px; }
+.field > label, .field > .label { font-size: 13px; font-weight: 600; color: var(--muted); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.two > * { min-width: 0; }
+input[type="text"], input[type="tel"], textarea, input:not([type]) { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 11px 12px; font-size: 16px; }
+textarea { min-height: 120px; resize: vertical; line-height: 1.45; font-size: 15px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 6px 12px; font-size: 13.5px; font-weight: 500; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+details summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: 14px; }
+details[open] summary { margin-bottom: 8px; }
+.hint { font-size: 12.5px; color: var(--muted); margin: 0; }
+.error { color: var(--danger); font-size: 13px; margin: 0; }
+
+.stepper { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.step { border: 0; background: var(--sunken); border-radius: 10px; padding: 8px 2px; font-size: 11.5px; font-weight: 600; color: var(--muted); line-height: 1.2; }
+.step.done { background: color-mix(in srgb, var(--accent) 16%, var(--surface)); color: var(--accent); }
+.step.now { background: var(--accent); color: var(--accent-ink); }
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 14.5px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.history { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+.history li { display: grid; grid-template-columns: 1fr auto; gap: 8px; border-left: 2px solid var(--line); padding-left: 10px; }
+.history time { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+.row-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(92px + env(safe-area-inset-bottom, 0px)); z-index: 60;
+  background: var(--ink); color: var(--surface); border-radius: 14px; padding: 10px 14px; font-size: 14px; display: flex; gap: 14px; align-items: center;
+  width: max-content; max-width: min(440px, calc(100vw - 32px)); box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+.toast button { background: none; border: 0; color: var(--marigold); font-weight: 700; padding: 0; flex: none; }
+
+@media (prefers-reduced-motion: reduce) { .sheet { animation: none; } }
+</style>
+</head>
+<body>
+
+<main class="app" id="app" aria-live="polite"></main>
+
+<nav class="bar" aria-label="Main">
+  <div class="bar-inner">
+    <button class="tab" data-act="route" data-route="today" id="tab-today">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+      <span>Today <span class="badge" id="today-badge"></span></span>
+    </button>
+    <button class="add-btn" data-act="add" aria-label="Add enquiry">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+    <button class="tab" data-act="route" data-route="pipeline" id="tab-pipeline">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h11M4 18h6"/></svg>
+      <span>Pipeline</span>
+    </button>
+  </div>
+</nav>
+
+<div id="sheet-root"></div>
+<div id="toast-root"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- constants ---------- */
+  var D = 864e5, H = 36e5;
+  var KEY = "enquiry-khata-prototype-v1";
+  var STAGES = [
+    { id: "asked",   label: "Asked",               short: "Asked" },
+    { id: "quoted",  label: "Quoted",              short: "Quoted" },
+    { id: "payment", label: "Waiting for payment", short: "Payment" },
+    { id: "paid",    label: "Paid",                short: "Paid" },
+    { id: "shipped", label: "Shipped",             short: "Shipped" }
+  ];
+  var SHOP = "Little Jhola Studio";
+  var inr = new Intl.NumberFormat("en-IN");
+
+  var ICON = {
+    wa: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 18.8L4 20z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5"/></svg>',
+    ig: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.8" cy="7.2" r=".6"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    box: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+    gear: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg>'
+  };
+
+  /* ---------- sample data (times are relative to "now" so the demo always looks current) ---------- */
+  function seed() {
+    var now = Date.now();
+    function L(name, handle, product, value, stage, touchedAgo, createdAgo, extra) {
+      var l = {
+        id: Math.random().toString(36).slice(2, 10), sample: true,
+        name: name, handle: handle, phone: "", product: product, value: value, stage: stage,
+        createdAt: now - createdAgo, lastTouch: now - touchedAgo, followUps: 0, snoozeUntil: 0,
+        history: []
+      };
+      l.history.push({ t: l.createdAt, text: "Asked about " + product });
+      if (extra) extra(l, now);
+      return l;
+    }
+    return [
+      L("Riya Sharma",   "riya_s",       "Diwali hamper (medium)",       1450, "asked",   2 * D + 3 * H, 2 * D + 3 * H),
+      L("Ananya Iyer",   "ananya.iyer",  "Personalised name necklace",    899, "quoted",  3 * D + 1 * H, 4 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Quoted ₹899" }); }),
+      L("Sneha Patil",   "snehapatil",   "Macramé wall hanging",          1200, "asked",   4 * D, 4 * D),
+      L("Farah Khan",    "farahk_",      "Resin keychain set of 4",        450, "quoted",  2 * D + 6 * H, 3 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Quoted ₹450" }); }),
+      L("Kabir Mehta",   "kabir.m",      "Corporate gift boxes ×10",     12000, "quoted",  20 * H, 2 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Quoted ₹12,000" }); }),
+      L("Tanvi Kulkarni","tanvi.k",      "Mini hamper",                    650, "asked",   3 * H, 3 * H),
+      L("Meera Joshi",   "meera.j",      "Hamper + handwritten card",     1850, "payment", 1 * D + 4 * H, 3 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Agreed to buy, sent UPI details" }); }),
+      L("Arjun Rao",     "arjunrao",     "Brass diya set",                2400, "payment", 5 * H, 1 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Agreed to buy, sent UPI details" }); }),
+      L("Pooja Nair",    "pooja.nair",   "Embroidered tote bag",           750, "paid",    1 * D, 2 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Payment received ₹750" }); }),
+      L("Ishita Das",    "ishita.das",   "Diwali hamper (large)",         2200, "paid",    9 * H, 2 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Payment received ₹2,200" }); }),
+      L("Rahul Verma",   "rahul_v",      "Scented candle trio",            999, "paid",    4 * H, 1 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Payment received ₹999" }); }),
+      L("Divya Menon",   "divya.menon",  "Pichwai coaster set",           1100, "shipped", 2 * D, 5 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Shipped" }); }),
+      L("Neha Gupta",    "nehag",        "Name necklace (gold tone)",      899, "shipped", 4 * D, 8 * D, function (l) { l.history.unshift({ t: l.lastTouch, text: "Shipped" }); })
+    ];
+  }
+
+  /* ---------- state + storage (browser only; prototype has no backend) ---------- */
+  var state = { leads: [], followDays: 2, pipeStage: "asked" };
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var s = JSON.parse(raw);
+        if (s && Array.isArray(s.leads)) { state.leads = s.leads; state.followDays = s.followDays || 2; state.pipeStage = s.pipeStage || "asked"; return; }
+      }
+    } catch (e) { /* storage blocked: fall through to sample data */ }
+    state.leads = seed();
+  }
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- helpers ---------- */
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function rupees(v) { return v ? "₹" + inr.format(v) : "₹ –"; }
+  function first(name) { return (name || "").trim().split(/\s+/)[0] || "there"; }
+  function find(id) { for (var i = 0; i < state.leads.length; i++) if (state.leads[i].id === id) return state.leads[i]; return null; }
+  function stage(id) { for (var i = 0; i < STAGES.length; i++) if (STAGES[i].id === id) return STAGES[i]; return { id: id, label: "Not interested", short: "Closed" }; }
+  function stageIndex(id) { for (var i = 0; i < STAGES.length; i++) if (STAGES[i].id === id) return i; return -1; }
+  function ago(t) {
+    var d = Date.now() - t;
+    if (d < 45 * 60e3) return "just now";
+    if (d < 20 * H) { var h = Math.round(d / H); return h + (h === 1 ? " hour ago" : " hours ago"); }
+    if (d < 1.6 * D) return "yesterday";
+    return Math.round(d / D) + " days ago";
+  }
+  function inTime(ms) {
+    if (ms <= H) return "within the hour";
+    if (ms < 20 * H) return "in " + Math.round(ms / H) + " h";
+    if (ms < 1.6 * D) return "tomorrow";
+    return "in " + Math.round(ms / D) + " days";
+  }
+  function who(l) { return l.name || ("@" + l.handle); }
+
+  /* ---------- the rules that drive the daily view ---------- */
+  function dueAt(l) {
+    if (l.snoozeUntil && l.snoozeUntil > Date.now()) return l.snoozeUntil;
+    if (l.stage === "asked" || l.stage === "quoted") return l.lastTouch + state.followDays * D;
+    if (l.stage === "payment") return l.lastTouch + 1 * D;
+    return Infinity;
+  }
+  function isDue(l) { return dueAt(l) <= Date.now(); }
+  function buckets() {
+    var b = { follow: [], payment: [], ship: [], later: [] };
+    state.leads.forEach(function (l) {
+      if (l.stage === "asked" || l.stage === "quoted") (isDue(l) ? b.follow : b.later).push(l);
+      else if (l.stage === "payment") b.payment.push(l);
+      else if (l.stage === "paid") b.ship.push(l);
+    });
+    b.follow.sort(function (a, c) { return a.lastTouch - c.lastTouch; });
+    b.payment.sort(function (a, c) { return (isDue(c) - isDue(a)) || (a.lastTouch - c.lastTouch); });
+    b.ship.sort(function (a, c) { return a.lastTouch - c.lastTouch; });
+    b.later.sort(function (a, c) { return dueAt(a) - dueAt(c); });
+    return b;
+  }
+  function why(l) {
+    var t = ago(l.lastTouch), quiet = l.followUps > 0 ? "Followed up " + t + ", still quiet" : null;
+    switch (l.stage) {
+      case "asked":   return quiet || "Asked " + t + ", no reply yet";
+      case "quoted":  return quiet || "You quoted " + t + ", no reply";
+      case "payment": return isDue(l) ? "Said yes " + t + ", payment not received" : "Said yes " + t + " · reminder " + inTime(dueAt(l) - Date.now());
+      case "paid":    return "Paid " + t + " · pack and ship";
+      case "shipped": return "Shipped " + t;
+      default:        return "Marked not interested " + t;
+    }
+  }
+
+  /* ---------- message templates (editable before sending) ---------- */
+  function message(l) {
+    var n = first(l.name), p = l.product || "item", v = l.value ? " (" + rupees(l.value) + ")" : "";
+    switch (l.stage) {
+      case "asked":
+        return "Hi " + n + "! Sorry for the late reply 🙏 The " + p + " is available" + (l.value ? " at " + rupees(l.value) : "") + ". Shall I keep one aside for you?";
+      case "quoted":
+        return "Hi " + n + "! Just checking if you're still interested in the " + p + v + " 😊 I have a few left and can ship within 2 days. Shall I book one for you?";
+      case "payment":
+        return "Hi " + n + "! Your " + p + " is ready to pack 🎁 Total is " + rupees(l.value) + ". You can pay by UPI and send the screenshot here. I'll ship it the same day.";
+      case "paid":
+        return "Hi " + n + "! Thank you for your order 🙏 Your " + p + " has been shipped. I'll share the tracking link here.";
+      case "shipped":
+        return "Hi " + n + "! Hope you loved the " + p + " 😊 If you did, a quick review or a story tag would mean a lot!";
+      default:
+        return "Hi " + n + "! ";
+    }
+  }
+  function waLink(l, text) {
+    var digits = (l.phone || "").replace(/\D/g, "");
+    if (digits.length === 10) digits = "91" + digits;
+    return "https://wa.me/" + (digits || "") + "?text=" + encodeURIComponent(text);
+  }
+  function igLink(l) { return l.handle ? "https://ig.me/m/" + encodeURIComponent(l.handle) : "https://www.instagram.com/direct/inbox/"; }
+
+  /* ---------- rendering ---------- */
+  var route = "today";
+  var app = document.getElementById("app");
+
+  function pill(l) {
+    var s = stage(l.stage);
+    return '<span class="pill" style="color: var(--s-' + esc(l.stage === "lost" ? "asked" : l.stage) + ')">' + esc(s.short) + "</span>";
+  }
+  function cardMain(l) {
+    return '<button class="card-main" data-act="detail" data-id="' + l.id + '" aria-label="Open ' + esc(who(l)) + '">' +
+      '<span class="who">' + esc(who(l)) + (l.name && l.handle ? "<small>@" + esc(l.handle) + "</small>" : "") + "</span>" +
+      '<span class="val">' + rupees(l.value) + "</span>" +
+      '<span class="what">' + esc(l.product || "Enquiry") + "</span>" + pill(l) +
+      '<span class="why">' + esc(why(l)) + "</span></button>";
+  }
+  function followButtons(l, label) {
+    return '<button class="btn wa grow" data-act="follow" data-id="' + l.id + '">' + ICON.wa + esc(label || "Follow up") + "</button>" +
+      '<button class="btn ghost" data-act="snooze" data-id="' + l.id + '" aria-label="Remind me tomorrow">' + ICON.clock + "Tomorrow</button>";
+  }
+  function header() {
+    var date = new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+    return '<header class="top"><div class="shop"><small>' + esc(date) + "</small><strong>" + esc(SHOP) + "</strong></div>" +
+      '<button class="icon-btn" data-act="settings" aria-label="Settings">' + ICON.gear + "</button></header>" +
+      (state.leads.some(function (l) { return l.sample; })
+        ? '<div class="sample-note"><span><b>Prototype.</b> Sample enquiries, saved only on this phone.</span><button data-act="reset">Reset</button></div>' : "");
+  }
+
+  function renderToday() {
+    var b = buckets();
+    var atStake = b.follow.reduce(function (s, l) { return s + (l.value || 0); }, 0);
+    var payDue = b.payment.filter(isDue).length;
+    var h = header();
+    var headline = b.follow.length
+      ? "<em>" + rupees(atStake) + "</em> of enquiries are waiting for your follow-up"
+      : (b.payment.length || b.ship.length ? "No follow-ups due. Nice." : "All caught up for today");
+    h += '<section class="summary" aria-label="Today at a glance"><h1>' + headline + "</h1>" +
+      '<div class="tally">' +
+      '<a href="#sec-follow" class="' + (b.follow.length ? "hot" : "") + '"><span class="n">' + b.follow.length + '</span><span class="l">to follow up</span></a>' +
+      '<a href="#sec-payment" class="' + (payDue ? "hot" : "") + '"><span class="n">' + b.payment.length + '</span><span class="l">waiting for payment</span></a>' +
+      '<a href="#sec-ship"><span class="n">' + b.ship.length + '</span><span class="l">to ship</span></a>' +
+      "</div></section>";
+
+    h += '<section class="section" id="sec-follow"><div class="section-head"><h2>Follow up</h2><span>quiet for ' + state.followDays + "+ days</span></div>";
+    h += b.follow.length ? b.follow.map(function (l) {
+      return '<article class="card due">' + cardMain(l) + '<div class="actions">' + followButtons(l) + "</div></article>";
+    }).join("") : '<p class="empty">Nobody has gone quiet. New enquiries show up here if there\'s no reply for ' + state.followDays + " days.</p>";
+    h += "</section>";
+
+    h += '<section class="section" id="sec-payment"><div class="section-head"><h2>Waiting for payment</h2><span>' + rupees(b.payment.reduce(function (s, l) { return s + (l.value || 0); }, 0)) + "</span></div>";
+    h += b.payment.length ? b.payment.map(function (l) {
+      var due = isDue(l);
+      return '<article class="card' + (due ? " due" : "") + '">' + cardMain(l) + '<div class="actions">' +
+        (due ? '<button class="btn wa grow" data-act="follow" data-id="' + l.id + '">' + ICON.wa + "Remind to pay</button>" : "") +
+        '<button class="btn' + (due ? "" : " primary grow") + '" data-act="next" data-id="' + l.id + '">' + ICON.arrow + "Mark paid</button></div></article>";
+    }).join("") : '<p class="empty">No one is waiting to pay.</p>';
+    h += "</section>";
+
+    h += '<section class="section" id="sec-ship"><div class="section-head"><h2>Ready to ship</h2><span>' + b.ship.length + " paid</span></div>";
+    h += b.ship.length ? b.ship.map(function (l) {
+      return '<article class="card">' + cardMain(l) + '<div class="actions"><button class="btn primary grow" data-act="next" data-id="' + l.id + '">' + ICON.box + "Mark shipped</button></div></article>";
+    }).join("") : '<p class="empty">Nothing to pack right now.</p>';
+    h += "</section>";
+
+    if (b.later.length) {
+      h += '<section class="section"><div class="section-head"><h2>Coming up</h2><span>reminders set</span></div><div class="later">' +
+        b.later.map(function (l) {
+          return '<button data-act="detail" data-id="' + l.id + '"><span class="who">' + esc(who(l)) + '</span><span class="when">Remind ' + esc(inTime(dueAt(l) - Date.now())) + "</span>" +
+            '<span class="what">' + esc(l.product || "Enquiry") + " · " + rupees(l.value) + " · " + esc(stage(l.stage).label) + "</span></button>";
+        }).join("") + "</div></section>";
+    }
+    app.innerHTML = h;
+    document.getElementById("today-badge").textContent = b.follow.length + payDue ? "· " + (b.follow.length + payDue) : "";
+  }
+
+  function renderPipeline() {
+    var cur = state.pipeStage;
+    var all = STAGES.concat([{ id: "lost", label: "Not interested", short: "Closed" }]);
+    var h = header() + '<h1 class="page-title">Pipeline</h1>';
+    h += '<div class="stage-scroll"><div class="stages" role="group" aria-label="Stages">' + all.map(function (s) {
+      var n = state.leads.filter(function (l) { return l.stage === s.id; }).length;
+      return '<button class="stage-chip" style="--chip: var(--s-' + (s.id === "lost" ? "asked" : s.id) + ')" data-act="pipe" data-stage="' + s.id + '" aria-pressed="' + (s.id === cur) + '">' +
+        '<span class="n">' + n + '</span><span class="l">' + esc(s.label) + "</span></button>";
+    }).join("") + "</div></div>";
+    var list = state.leads.filter(function (l) { return l.stage === cur; }).sort(function (a, c) { return a.lastTouch - c.lastTouch; });
+    var total = list.reduce(function (s, l) { return s + (l.value || 0); }, 0);
+    h += '<p class="stage-total"><b>' + rupees(total) + "</b> across " + list.length + (list.length === 1 ? " enquiry" : " enquiries") + "</p>";
+    h += '<section class="section">' + (list.length ? list.map(function (l) {
+      var i = stageIndex(l.stage), next = STAGES[i + 1];
+      var due = (l.stage === "asked" || l.stage === "quoted" || l.stage === "payment") && isDue(l);
+      return '<article class="card' + (due ? " due" : "") + '">' + cardMain(l) + '<div class="actions">' +
+        (next ? '<button class="btn grow" data-act="next" data-id="' + l.id + '">' + ICON.arrow + "Move to " + esc(next.label) + "</button>" : "") +
+        (l.stage !== "lost" ? '<button class="btn wa" data-act="follow" data-id="' + l.id + '" aria-label="Message ' + esc(who(l)) + '">' + ICON.wa + "Message</button>" : "") +
+        "</div></article>";
+    }).join("") : '<p class="empty">No enquiries in this stage.</p>') + "</section>";
+    app.innerHTML = h;
+  }
+
+  function render() {
+    if (route === "pipeline") renderPipeline(); else renderToday();
+    document.getElementById("tab-today").setAttribute("aria-current", route === "today" ? "page" : "false");
+    document.getElementById("tab-pipeline").setAttribute("aria-current", route === "pipeline" ? "page" : "false");
+    if (route === "pipeline") { var b = buckets(); document.getElementById("today-badge").textContent = (b.follow.length + b.payment.filter(isDue).length) ? "· " + (b.follow.length + b.payment.filter(isDue).length) : ""; }
+  }
+
+  /* ---------- sheets ---------- */
+  var sheetRoot = document.getElementById("sheet-root");
+  var lastFocus = null;
+  function openSheet(html, label) {
+    lastFocus = document.activeElement;
+    sheetRoot.innerHTML = '<div class="backdrop" data-act="close-backdrop"><section class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(label) + '"><div class="grip"></div>' + html + "</section></div>";
+    var f = sheetRoot.querySelector("[autofocus], input, textarea, button");
+    if (f) f.focus();
+  }
+  function closeSheet() {
+    sheetRoot.innerHTML = "";
+    if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus();
+  }
+
+  /* ---------- toast with undo ---------- */
+  var toastTimer = null, undoFn = null;
+  function toast(text, undo) {
+    undoFn = undo || null;
+    document.getElementById("toast-root").innerHTML = '<div class="toast" role="status"><span>' + esc(text) + "</span>" + (undo ? '<button data-act="undo">Undo</button>' : "") + "</div>";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { document.getElementById("toast-root").innerHTML = ""; undoFn = null; }, 5000);
+  }
+  function withUndo(l, change, text) {
+    var before = JSON.stringify(l);
+    change(l); save(); render();
+    toast(text, function () { var i = state.leads.indexOf(l); if (i > -1) state.leads[i] = JSON.parse(before); save(); render(); });
+  }
+
+  /* ---------- actions ---------- */
+  function moveTo(l, stageId, note) {
+    l.stage = stageId; l.lastTouch = Date.now(); l.followUps = 0; l.snoozeUntil = 0;
+    l.history.unshift({ t: Date.now(), text: note || ("Moved to " + stage(stageId).label) });
+  }
+
+  function followSheet(l) {
+    var text = message(l);
+    var html = "<h3>Message " + esc(first(l.name) || "@" + l.handle) + "</h3>" +
+      '<p class="sub">' + esc(l.product || "Enquiry") + " · " + esc(why(l)) + "</p>" +
+      '<div class="field"><label for="fu-msg">Message (edit if you like)</label><textarea id="fu-msg">' + esc(text) + "</textarea></div>" +
+      '<div class="row-actions">' +
+      '<a class="btn wa grow" id="fu-wa" target="_blank" rel="noopener" href="' + esc(waLink(l, text)) + '">' + ICON.wa + "Open WhatsApp</a>" +
+      '<a class="btn grow" id="fu-ig" target="_blank" rel="noopener" href="' + esc(igLink(l)) + '">' + ICON.ig + "Copy + open Instagram</a></div>" +
+      '<p class="hint">WhatsApp opens with the message typed in. Instagram can\'t pre-fill a DM, so the message is copied and you paste it in the chat.' +
+      (l.phone ? "" : " No WhatsApp number saved, so WhatsApp will ask you to pick the contact.") + "</p>";
+    openSheet(html, "Follow up");
+    var ta = document.getElementById("fu-msg"), wa = document.getElementById("fu-wa"), ig = document.getElementById("fu-ig");
+    ta.addEventListener("input", function () { wa.href = waLink(l, ta.value); });
+    function record(channel) {
+      var isFollow = l.stage === "asked" || l.stage === "quoted" || l.stage === "payment";
+      withUndo(l, function (x) {
+        x.lastTouch = Date.now(); x.snoozeUntil = 0;
+        if (isFollow) x.followUps = (x.followUps || 0) + 1;
+        x.history.unshift({ t: Date.now(), text: (isFollow ? "Followed up on " : "Messaged on ") + channel });
+      }, (isFollow ? "Followed up with " : "Messaged ") + first(l.name) + (isFollow ? " · next reminder in " + (l.stage === "payment" ? 1 : state.followDays) + (l.stage === "payment" || state.followDays === 1 ? " day" : " days") : ""));
+      closeSheet();
+    }
+    wa.addEventListener("click", function () { setTimeout(function () { record("WhatsApp"); }, 0); });
+    ig.addEventListener("click", function (e) {
+      var msg = ta.value;
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).catch(function () {});
+      if (l.sample) {
+        e.preventDefault();
+        record("Instagram");
+        toast("Copied. With a real customer this opens their Instagram chat.");
+        return;
+      }
+      setTimeout(function () { record("Instagram"); }, 0);
+    });
+  }
+
+  function detailSheet(l) {
+    var i = stageIndex(l.stage);
+    var html = "<h3>" + esc(who(l)) + "</h3>" +
+      '<p class="sub">' + esc(why(l)) + "</p>" +
+      '<div class="field"><span class="label">Stage (tap to change)</span><div class="stepper">' + STAGES.map(function (s, k) {
+        return '<button class="step' + (k < i ? " done" : "") + (k === i ? " now" : "") + '" data-act="set-stage" data-id="' + l.id + '" data-stage="' + s.id + '"' + (k === i ? ' aria-current="step"' : "") + ">" + esc(s.short) + "</button>";
+      }).join("") + "</div></div>" +
+      '<dl class="facts"><dt>Asked about</dt><dd>' + esc(l.product || "–") + "</dd><dt>Value</dt><dd>" + rupees(l.value) + "</dd>" +
+      "<dt>Instagram</dt><dd>" + (l.handle ? "@" + esc(l.handle) : "–") + "</dd><dt>WhatsApp</dt><dd>" + (l.phone ? esc(l.phone) : "not saved") + "</dd>" +
+      "<dt>First asked</dt><dd>" + esc(ago(l.createdAt)) + "</dd></dl>" +
+      '<div class="row-actions">' + (l.stage !== "lost" ? '<button class="btn wa grow" data-act="follow" data-id="' + l.id + '">' + ICON.wa + "Message</button>" : "") +
+      (l.stage !== "lost" && l.stage !== "shipped" ? '<button class="btn" data-act="lost" data-id="' + l.id + '">Not interested</button>' : "") +
+      '<button class="btn ghost danger" data-act="delete" data-id="' + l.id + '">Delete</button></div>' +
+      '<div class="field"><span class="label">History</span><ul class="history">' + l.history.map(function (e) {
+        return "<li><span>" + esc(e.text) + "</span><time>" + esc(ago(e.t)) + "</time></li>";
+      }).join("") + "</ul></div>";
+    openSheet(html, "Enquiry details");
+  }
+
+  function addSheet() {
+    var opened = Date.now();
+    var recent = [];
+    state.leads.slice().sort(function (a, c) { return c.createdAt - a.createdAt; }).forEach(function (l) {
+      if (l.product && recent.indexOf(l.product) === -1 && recent.length < 4) recent.push(l.product);
+    });
+    var html = "<h3>New enquiry</h3>" +
+      '<form id="add-form" novalidate>' +
+      '<div style="display:grid;gap:14px">' +
+      '<div class="two"><div class="field"><label for="f-name">Name</label><input id="f-name" type="text" placeholder="Riya" autocomplete="off" autocapitalize="words" autofocus></div>' +
+      '<div class="field"><label for="f-handle">Instagram</label><input id="f-handle" type="text" placeholder="@riya_s" autocomplete="off" autocapitalize="none" spellcheck="false"></div></div>' +
+      '<div class="field"><label for="f-product">Asked about</label><input id="f-product" type="text" placeholder="Diwali hamper" autocomplete="off">' +
+      (recent.length ? '<div class="chips">' + recent.map(function (p) { return '<button type="button" class="chip" data-act="pick-product" data-value="' + esc(p) + '">' + esc(p) + "</button>"; }).join("") + "</div>" : "") + "</div>" +
+      '<div class="field"><label for="f-value">Rough value (₹)</label><input id="f-value" type="text" inputmode="numeric" placeholder="1500" autocomplete="off">' +
+      '<div class="chips">' + [500, 1000, 1500, 2500].map(function (v) { return '<button type="button" class="chip" data-act="pick-value" data-value="' + v + '">' + rupees(v) + "</button>"; }).join("") + "</div></div>" +
+      '<div class="field"><span class="label">Stage</span><div class="chips" id="f-stage">' + STAGES.slice(0, 3).map(function (s, k) {
+        return '<button type="button" class="chip" data-act="pick-stage" data-value="' + s.id + '" aria-pressed="' + (k === 0) + '">' + esc(s.label) + "</button>";
+      }).join("") + "</div></div>" +
+      '<details><summary>Add WhatsApp number</summary><input id="f-phone" type="tel" inputmode="tel" placeholder="98765 43210" autocomplete="off"></details>' +
+      '<p class="error" id="f-error" hidden>Add a name or an Instagram handle.</p>' +
+      '<button type="submit" class="btn primary grow" style="min-height:48px;font-size:16px">Save enquiry</button>' +
+      "</div></form>";
+    openSheet(html, "New enquiry");
+    document.getElementById("add-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = document.getElementById("f-name").value.trim();
+      var handle = document.getElementById("f-handle").value.trim().replace(/^@+/, "");
+      if (!name && !handle) { document.getElementById("f-error").hidden = false; document.getElementById("f-name").focus(); return; }
+      var product = document.getElementById("f-product").value.trim();
+      var value = parseInt(document.getElementById("f-value").value.replace(/[^\d]/g, ""), 10) || 0;
+      var picked = document.querySelector('#f-stage [aria-pressed="true"]');
+      var stg = picked ? picked.getAttribute("data-value") : "asked";
+      var now = Date.now();
+      var l = { id: Math.random().toString(36).slice(2, 10), sample: false, name: name, handle: handle, phone: document.getElementById("f-phone").value.trim(),
+        product: product, value: value, stage: stg, createdAt: now, lastTouch: now, followUps: 0, snoozeUntil: 0,
+        history: [{ t: now, text: "Asked about " + (product || "something") }] };
+      if (stg !== "asked") l.history.unshift({ t: now, text: "Added as " + stage(stg).label });
+      state.leads.push(l); save();
+      closeSheet(); route = "today"; location.hash = "today"; render();
+      var secs = Math.max(1, Math.round((Date.now() - opened) / 1000));
+      var remind = stg === "payment" ? "1 day" : state.followDays + (state.followDays === 1 ? " day" : " days");
+      toast("Saved in " + secs + " sec · reminder in " + remind + " if no reply", function () {
+        state.leads = state.leads.filter(function (x) { return x !== l; }); save(); render();
+      });
+    });
+  }
+
+  function settingsSheet() {
+    var html = "<h3>Settings</h3>" +
+      '<div class="field"><span class="label">Remind me when a customer is quiet for</span><div class="chips">' + [1, 2, 3, 5].map(function (d) {
+        return '<button type="button" class="chip" data-act="set-days" data-value="' + d + '" aria-pressed="' + (state.followDays === d) + '">' + d + (d === 1 ? " day" : " days") + "</button>";
+      }).join("") + "</div></div>" +
+      '<div class="field"><span class="label">Prototype data</span><p class="hint">Everything is stored only in this browser. Reset brings back the sample enquiries.</p>' +
+      '<div class="row-actions"><button class="btn" data-act="reset-confirm">Reset sample data</button><button class="btn ghost" data-act="clear-confirm">Start empty</button></div></div>';
+    openSheet(html, "Settings");
+  }
+
+  function confirmSheet(title, body, actLabel, act, danger) {
+    openSheet("<h3>" + esc(title) + '</h3><p class="sub" style="margin:0">' + esc(body) + "</p>" +
+      '<div class="row-actions"><button class="btn ' + (danger ? "danger" : "primary") + ' grow" data-act="' + act + '">' + esc(actLabel) + '</button><button class="btn grow" data-act="close">Cancel</button></div>', title);
+  }
+
+  /* ---------- event delegation ---------- */
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-act]");
+    if (!el) return;
+    var act = el.getAttribute("data-act"), id = el.getAttribute("data-id"), l = id ? find(id) : null;
+    switch (act) {
+      case "close-backdrop": if (e.target === el) closeSheet(); break;
+      case "close": closeSheet(); break;
+      case "route": route = el.getAttribute("data-route"); location.hash = route; render(); window.scrollTo(0, 0); break;
+      case "add": addSheet(); break;
+      case "settings": settingsSheet(); break;
+      case "reset": confirmSheet("Reset sample data?", "Your changes in this prototype are cleared and the sample enquiries come back.", "Reset", "reset-do"); break;
+      case "reset-confirm": confirmSheet("Reset sample data?", "Your changes in this prototype are cleared and the sample enquiries come back.", "Reset", "reset-do"); break;
+      case "clear-confirm": confirmSheet("Start with an empty list?", "All enquiries, including the samples, are removed from this browser.", "Remove all", "clear-do", true); break;
+      case "reset-do": state.leads = seed(); save(); closeSheet(); render(); toast("Sample data restored"); break;
+      case "clear-do": state.leads = []; save(); closeSheet(); render(); toast("List cleared. Tap + to add your first enquiry."); break;
+      case "undo": if (undoFn) { var f = undoFn; undoFn = null; f(); document.getElementById("toast-root").innerHTML = ""; } break;
+      case "detail": if (l) detailSheet(l); break;
+      case "follow": if (l) followSheet(l); break;
+      case "snooze": if (l) withUndo(l, function (x) { x.snoozeUntil = Date.now() + D; x.history.unshift({ t: Date.now(), text: "Snoozed until tomorrow" }); }, "OK, " + first(l.name) + " will come back tomorrow"); break;
+      case "next":
+        if (l) { var nx = STAGES[stageIndex(l.stage) + 1]; if (nx) withUndo(l, function (x) { moveTo(x, nx.id, nx.id === "paid" ? "Payment received " + rupees(x.value) : null); }, first(l.name) + " moved to " + nx.label); }
+        break;
+      case "set-stage":
+        if (l) { var s = el.getAttribute("data-stage"); if (s !== l.stage) { closeSheet(); withUndo(l, function (x) { moveTo(x, s); }, first(l.name) + " moved to " + stage(s).label); } }
+        break;
+      case "lost": if (l) { closeSheet(); withUndo(l, function (x) { moveTo(x, "lost", "Marked not interested"); }, first(l.name) + " marked not interested"); } break;
+      case "delete":
+        if (l) { closeSheet(); var idx = state.leads.indexOf(l); state.leads.splice(idx, 1); save(); render();
+          toast("Deleted " + who(l), function () { state.leads.splice(idx, 0, l); save(); render(); }); }
+        break;
+      case "pipe": state.pipeStage = el.getAttribute("data-stage"); save(); render(); break;
+      case "pick-product": document.getElementById("f-product").value = el.getAttribute("data-value"); document.getElementById("f-value").focus(); break;
+      case "pick-value": document.getElementById("f-value").value = el.getAttribute("data-value"); break;
+      case "pick-stage":
+        Array.prototype.forEach.call(document.querySelectorAll("#f-stage .chip"), function (c) { c.setAttribute("aria-pressed", String(c === el)); });
+        break;
+      case "set-days":
+        state.followDays = parseInt(el.getAttribute("data-value"), 10) || 2; save(); render();
+        Array.prototype.forEach.call(el.parentNode.children, function (c) { c.setAttribute("aria-pressed", String(c === el)); });
+        break;
+    }
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && sheetRoot.innerHTML) closeSheet(); });
+
+  /* ---------- routing on #today / #pipeline ---------- */
+  function fromHash() { var h = (location.hash || "").replace("#", ""); if (h === "today" || h === "pipeline") { route = h; return true; } return false; }
+  window.addEventListener("hashchange", function () { if (fromHash()) render(); });
+
+  load();
+  fromHash();
+  render();
+  // Refresh relative times ("2 hours ago") every minute while open.
+  setInterval(function () { if (!sheetRoot.innerHTML) render(); }, 60e3);
+})();
+</script>
+</body>
+</html>
