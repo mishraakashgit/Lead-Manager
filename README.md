@@ -24,13 +24,17 @@ What it does:
 - **Reminders:** a customer shows up in Follow up after 2 days of silence (1, 2, 3 or 5 days in Settings). Payment reminders after 1 day. "Tomorrow" snoozes.
 - Changes are saved in the browser's local storage only. Settings → Reset brings the samples back.
 
-### Put it online for demos (GitHub Pages)
+### Deploy on Netlify
 
-1. Merge this branch into `main`.
-2. Repo **Settings → Pages → Build and deployment → Deploy from a branch**, choose `main` and `/ (root)`.
-3. The prototype will be at `https://<your-username>.github.io/Lead-Manager/prototype/`.
+`netlify.toml` serves the `prototype/` folder at the site root. There's no build step, and pages are marked `noindex` so the prototype stays out of search results.
 
-GitHub Pages on a private repository needs a paid GitHub plan. On the free plan, either make the repo public or use the shared artifact link.
+1. Sign in at [app.netlify.com](https://app.netlify.com) with GitHub. This works from a phone browser.
+2. **Add new site → Import an existing project → GitHub**, then pick `mishraakashgit/Lead-Manager`. If the repo isn't listed, use **Configure the Netlify app on GitHub** to give Netlify access to it.
+3. Branch to deploy: `main` once this branch is merged. Until then, pick `claude/blissful-euler-e1lx9a`.
+4. Leave the build command empty. The publish directory (`prototype`) is read from `netlify.toml`. Click **Deploy**.
+5. Optional: **Site configuration → Change site name** for a cleaner URL, for example `enquiry-khata.netlify.app`.
+
+After that, every push to the deploy branch redeploys the site automatically. Netlify works with private repos on the free plan.
 
 ## MVP scope (after validation)
 

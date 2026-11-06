@@ -1,0 +1,14 @@
+# Netlify config for the clickable prototype.
+# No build step: the site is the static files in /prototype, served at the site root.
+
+[build]
+  publish = "prototype"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Prototype with sample data: keep it out of search results.
+    X-Robots-Tag = "noindex"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
